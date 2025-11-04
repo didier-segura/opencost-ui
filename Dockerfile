@@ -1,5 +1,6 @@
 FROM node:18.3.0 AS builder
 
+
 ADD package*.json /opt/ui/
 WORKDIR /opt/ui
 RUN npm install
