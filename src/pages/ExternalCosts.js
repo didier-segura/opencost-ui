@@ -25,13 +25,19 @@ import { ExternalCostDetails } from "../components/externalCosts/externalCostDet
 
 const ExternalCosts = () => {
   const useStyles = makeStyles({
-    reportHeader: {
+    reportCard: {
       display: "flex",
-      flexFlow: "row",
-      padding: 24,
+      flexDirection: "column",
+      gap: "1.75rem",
     },
-    titles: {
-      flexGrow: 1,
+    reportHeader: {
+      alignItems: "flex-start",
+      borderBottom: `1px solid var(--card-border)`,
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "1.5rem",
+      justifyContent: "space-between",
+      paddingBottom: "1.5rem",
     },
   });
   const classes = useStyles();
@@ -236,7 +242,7 @@ const ExternalCosts = () => {
   return (
     <Page active="cloud.html">
       {/* figure out if we need */}
-      <Header headerTitle="External Costs">
+      <Header headerTitle="External Costs" eyebrow="Off-Cluster Spend">
         <IconButton aria-label="refresh" onClick={() => setFetch(true)}>
           <RefreshIcon />
         </IconButton>
@@ -247,7 +253,7 @@ const ExternalCosts = () => {
         </div>
       )}
       {init && (
-        <Paper id="cloud-cost">
+        <Paper id="cloud-cost" className={classes.reportCard}>
           <div className={classes.reportHeader}>
             <ExternalCostsControls
               costType={costType}

@@ -14,8 +14,29 @@ import AllocationChart from "./AllocationChart";
 import { toCurrency } from "../util";
 
 const useStyles = makeStyles({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+  },
   noResults: {
     padding: 24,
+  },
+  chartPanel: {
+    background: "linear-gradient(135deg, rgba(74, 222, 128, 0.08), rgba(56, 189, 248, 0.06))",
+    borderRadius: 18,
+    padding: "1.5rem",
+  },
+  tableSection: {
+    border: `1px solid var(--card-border)`,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  tableContainer: {
+    maxHeight: "520px",
+  },
+  pagination: {
+    borderTop: `1px solid var(--card-border)`,
   },
 });
 
@@ -106,80 +127,110 @@ const AllocationReport = ({
   );
 
   return (
-    <div id="report">
-      <AllocationChart
-        allocationRange={allocationData}
-        currency={currency}
-        n={10}
-        height={300}
-      />
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {headCells.map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  colSpan={cell.colspan}
-                  align={cell.numeric ? "right" : "left"}
-                  sortDirection={orderBy === cell.id ? order : false}
-                  style={{ width: cell.width }}
-                >
-                  <TableSortLabel
-                    active={orderBy === cell.id}
-                    direction={orderBy === cell.id ? order : "asc"}
-                    onClick={createSortHandler(cell.id)}
-                  >
-                    {cell.label}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              {headCells.map((cell) => {
-                return (
+    <div className={classes.root}>
+      <div className={classes.chartPanel}>
+        <AllocationChart
+          allocationRange={allocationData}
+          currency={currency}
+          n={10}
+          height={300}
+        />
+      </div>
+      <div className={classes.tableSection}>
+        <TableContainer className={classes.tableContainer}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                {headCells.map((cell) => (
                   <TableCell
                     key={cell.id}
                     colSpan={cell.colspan}
                     align={cell.numeric ? "right" : "left"}
-                    style={{ fontWeight: 500 }}
+                    sortDirection={orderBy === cell.id ? order : false}
+                    style={{ width: cell.width }}
                   >
-                    {cell.numeric
-                      ? cell.label === "Efficiency"
-                        ? totalData.totalEfficiency == 1.0 &&
-                          totalData.cpuReqCoreHrs == 0 &&
-                          totalData.ramReqByteHrs == 0
-                          ? "Inf%"
-                          : `${round(totalData.totalEfficiency * 100, 1)}%`
-                        : toCurrency(totalData[cell.id], currency)
-                      : totalData[cell.id]}
+                    <TableSortLabel
+                      active={orderBy === cell.id}
+                      direction={orderBy === cell.id ? order : "asc"}
+                      onClick={createSortHandler(cell.id)}
+                    >
+                      {cell.label}
+                    </TableSortLabel>
                   </TableCell>
-                );
-              })}
-            </TableRow>
-            {pageRows.map((row, key) => {
-              if (row.name === "__unmounted__") {
-                row.name = "Unmounted PVs";
-              }
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                {headCells.map((cell) => {
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      colSpan={cell.colspan}
+                      align={cell.numeric ? "right" : "left"}
+                      style={{ fontWeight: 600 }}
+                    >
+                      {cell.numeric
+                        ? cell.label === "Efficiency"
+                          ? totalData.totalEfficiency == 1.0 &&
+                            totalData.cpuReqCoreHrs == 0 &&
+                            totalData.ramReqByteHrs == 0
+                            ? "Inf%"
+                            : `${round(totalData.totalEfficiency * 100, 1)}%`
+                          : toCurrency(totalData[cell.id], currency)
+                        : totalData[cell.id]}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+              {pageRows.map((row, key) => {
+                if (row.name === "__unmounted__") {
+                  row.name = "Unmounted PVs";
+                }
 
-              let isIdle = row.name.indexOf("__idle__") >= 0;
-              let isUnallocated = row.name.indexOf("__unallocated__") >= 0;
-              let isUnmounted = row.name.indexOf("Unmounted PVs") >= 0;
+                let isIdle = row.name.indexOf("__idle__") >= 0;
+                let isUnallocated = row.name.indexOf("__unallocated__") >= 0;
+                let isUnmounted = row.name.indexOf("Unmounted PVs") >= 0;
 
-              // Replace "efficiency" with Inf if there is usage w/o request
-              let efficiency = round(row.totalEfficiency * 100, 1);
-              if (
-                row.totalEfficiency == 1.0 &&
-                row.cpuReqCoreHrs == 0 &&
-                row.ramReqByteHrs == 0
-              ) {
-                efficiency = "Inf";
-              }
+                // Replace "efficiency" with Inf if there is usage w/o request
+                let efficiency = round(row.totalEfficiency * 100, 1);
+                if (
+                  row.totalEfficiency == 1.0 &&
+                  row.cpuReqCoreHrs == 0 &&
+                  row.ramReqByteHrs == 0
+                ) {
+                  efficiency = "Inf";
+                }
 
-              // Do not allow drill-down for idle and unallocated rows
-              if (isIdle || isUnallocated || isUnmounted) {
+                // Do not allow drill-down for idle and unallocated rows
+                if (isIdle || isUnallocated || isUnmounted) {
+                  return (
+                    <TableRow key={key}>
+                      <TableCell align="left">{row.name}</TableCell>
+                      <TableCell align="right">
+                        {toCurrency(row.cpuCost, currency)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {toCurrency(row.gpuCost, currency)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {toCurrency(row.ramCost, currency)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {toCurrency(row.pvCost, currency)}
+                      </TableCell>
+                      {isIdle ? (
+                        <TableCell align="right">&mdash;</TableCell>
+                      ) : (
+                        <TableCell align="right">{efficiency}%</TableCell>
+                      )}
+                      <TableCell align="right">
+                        {toCurrency(row.totalCost, currency)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+
                 return (
                   <TableRow key={key}>
                     <TableCell align="left">{row.name}</TableCell>
@@ -195,52 +246,27 @@ const AllocationReport = ({
                     <TableCell align="right">
                       {toCurrency(row.pvCost, currency)}
                     </TableCell>
-                    {isIdle ? (
-                      <TableCell align="right">&mdash;</TableCell>
-                    ) : (
-                      <TableCell align="right">{efficiency}%</TableCell>
-                    )}
+                    <TableCell align="right">{efficiency}%</TableCell>
                     <TableCell align="right">
                       {toCurrency(row.totalCost, currency)}
                     </TableCell>
                   </TableRow>
                 );
-              }
-
-              return (
-                <TableRow key={key}>
-                  <TableCell align="left">{row.name}</TableCell>
-                  <TableCell align="right">
-                    {toCurrency(row.cpuCost, currency)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {toCurrency(row.gpuCost, currency)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {toCurrency(row.ramCost, currency)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {toCurrency(row.pvCost, currency)}
-                  </TableCell>
-                  <TableCell align="right">{efficiency}%</TableCell>
-                  <TableCell align="right">
-                    {toCurrency(row.totalCost, currency)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component="div"
-        count={numData}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[10, 25, 50]}
-        page={Math.min(page, lastPage)}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          className={classes.pagination}
+          component="div"
+          count={numData}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[10, 25, 50]}
+          page={Math.min(page, lastPage)}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </div>
     </div>
   );
 };

@@ -1,20 +1,19 @@
-import { makeStyles } from "@material-ui/styles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-
 import React from "react";
+import { makeStyles } from "@material-ui/styles";
+import MenuItem from "@material-ui/core/MenuItem";
+import TextField from "@material-ui/core/TextField";
 
 import SelectWindow from "../SelectWindow";
 
 const useStyles = makeStyles({
   wrapper: {
+    alignItems: "center",
     display: "inline-flex",
+    flexWrap: "wrap",
+    gap: "0.75rem",
   },
-  formControl: {
-    margin: 8,
-    minWidth: 120,
+  input: {
+    minWidth: 150,
   },
 });
 
@@ -40,50 +39,53 @@ function EditControl({
         window={window}
         setWindow={setWindow}
       />
-      <FormControl className={classes.formControl}>
-        <InputLabel id="aggregation-select-label">Breakdown</InputLabel>
-        <Select
-          id="aggregation-select"
-          value={aggregateBy}
-          onChange={(e) => {
-            setAggregateBy(e.target.value);
-          }}
-        >
-          {aggregationOptions.map((opt) => (
-            <MenuItem key={opt.value} value={opt.value}>
-              {opt.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="accumulate-label">Resolution</InputLabel>
-        <Select
-          id="accumulate"
-          value={accumulate}
-          onChange={(e) => setAccumulate(e.target.value)}
-        >
-          {accumulateOptions.map((opt) => (
-            <MenuItem key={opt.value} value={opt.value}>
-              {opt.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="currency-label">Currency</InputLabel>
-        <Select
-          id="currency"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
-          {currencyOptions?.map((currency) => (
-            <MenuItem key={currency} value={currency}>
-              {currency}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <TextField
+        select
+        label="Breakdown"
+        variant="outlined"
+        size="small"
+        value={aggregateBy}
+        onChange={(e) => setAggregateBy(e.target.value)}
+        className={classes.input}
+      >
+        {aggregationOptions.map((opt) => (
+          <MenuItem key={opt.value} value={opt.value}>
+            {opt.name}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        select
+        label="Resolution"
+        variant="outlined"
+        size="small"
+        value={accumulate}
+        onChange={(e) => setAccumulate(e.target.value)}
+        className={classes.input}
+      >
+        {accumulateOptions.map((opt) => (
+          <MenuItem key={opt.value} value={opt.value}>
+            {opt.name}
+          </MenuItem>
+        ))}
+      </TextField>
+
+      <TextField
+        select
+        label="Currency"
+        variant="outlined"
+        size="small"
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value)}
+        className={classes.input}
+      >
+        {currencyOptions?.map((code) => (
+          <MenuItem key={code} value={code}>
+            {code}
+          </MenuItem>
+        ))}
+      </TextField>
     </div>
   );
 }

@@ -19,8 +19,19 @@ const Controls = ({
   currencyOptions,
   setCurrency,
 }) => {
+  const useStyles = makeStyles({
+    root: {
+      alignItems: "center",
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "0.75rem",
+      justifyContent: "flex-end",
+    },
+  });
+  const classes = useStyles();
+
   return (
-    <div>
+    <div className={classes.root}>
       <EditControl
         windowOptions={windowOptions}
         window={window}

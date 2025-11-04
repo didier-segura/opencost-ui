@@ -28,13 +28,23 @@ import { CloudCostDetails } from "../components/cloudCost/cloudCostDetails";
 
 const CloudCosts = () => {
   const useStyles = makeStyles({
-    reportHeader: {
+    reportCard: {
       display: "flex",
-      flexFlow: "row",
-      padding: 24,
+      flexDirection: "column",
+      gap: "1.75rem",
+    },
+    reportHeader: {
+      alignItems: "flex-start",
+      borderBottom: `1px solid var(--card-border)`,
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "1.5rem",
+      justifyContent: "space-between",
+      paddingBottom: "1.5rem",
     },
     titles: {
       flexGrow: 1,
+      minWidth: 240,
     },
   });
   const classes = useStyles();
@@ -228,7 +238,7 @@ const CloudCosts = () => {
 
   return (
     <Page active="cloud.html">
-      <Header headerTitle="Cloud Costs">
+      <Header headerTitle="Cloud Costs" eyebrow="Cloud Spend">
         <IconButton aria-label="refresh" onClick={() => setFetch(true)}>
           <RefreshIcon />
         </IconButton>
@@ -247,7 +257,7 @@ const CloudCosts = () => {
       )}
 
       {init && hasCloudCostEnabled && (
-        <Paper id="cloud-cost">
+        <Paper id="cloud-cost" className={classes.reportCard}>
           <div className={classes.reportHeader}>
             <div className={classes.titles}>
               <Typography variant="h5">{title}</Typography>

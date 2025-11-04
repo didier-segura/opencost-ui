@@ -1,18 +1,78 @@
 @import "../../node_modules/material-design-icons-iconfont/dist/material-design-icons.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --sidebar-bg: #121a24;
+  --sidebar-border: #1f2a36;
+  --sidebar-active: #4ade80;
+  --sidebar-text: #cbd5f5;
+  --page-bg: #f4f6f9;
+  --card-bg: #ffffff;
+  --card-border: #e5e8ec;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 body {
-  background-color: #f3f3f3;
+  background: var(--page-bg);
+  color: var(--text-primary);
   display: flex;
-  flex-flow: column;
-  font-family: "Roboto", sans-serif;
-  margin: 0px;
-  overflow-y: scroll;
+  flex-direction: column;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
 }
 
 body .page-container {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   flex-grow: 1;
+}
+
+a {
+  color: inherit;
+}
+
+.MuiPaper-root {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+}
+
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5 {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.MuiTypography-body2 {
+  color: var(--text-secondary);
+}
+
+.MuiTableHead-root {
+  background: #f8fafc;
+}
+
+.MuiTableCell-head {
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.MuiTableCell-body {
+  color: var(--text-primary);
+}
+
+.MuiTablePagination-root {
+  border-top: 1px solid var(--card-border);
 }
 
 .recharts-tooltip-wrapper {

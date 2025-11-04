@@ -3,6 +3,7 @@ import { get, forEach, reverse, round, sortBy } from "lodash";
 import ExportIcon from "@material-ui/icons/GetApp";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import { makeStyles } from "@material-ui/styles";
 
 const columns = [
   {
@@ -62,6 +63,23 @@ const toCSVLine = (datum) => {
 };
 
 const DownloadControl = ({ cumulativeData, title }) => {
+  const useStyles = makeStyles({
+    button: {
+      backgroundColor: "rgba(148, 163, 184, 0.14)",
+      borderRadius: 12,
+      color: "#e2e8f0",
+      transition: "all 120ms ease",
+      "&:hover": {
+        backgroundColor: "rgba(74, 222, 128, 0.2)",
+        color: "#f8fafc",
+      },
+    },
+    icon: {
+      color: "inherit",
+    },
+  });
+  const classes = useStyles();
+
   // downloadReport downloads a CSV of the cumulative allocation data
   function downloadReport() {
     // Build CSV
@@ -85,8 +103,8 @@ const DownloadControl = ({ cumulativeData, title }) => {
 
   return (
     <Tooltip title="Download CSV">
-      <IconButton onClick={downloadReport}>
-        <ExportIcon />
+      <IconButton onClick={downloadReport} className={classes.button}>
+        <ExportIcon className={classes.icon} />
       </IconButton>
     </Tooltip>
   );

@@ -4,25 +4,32 @@ import { useLocation } from "react-router-dom";
 import { SidebarNav } from "./Nav/SidebarNav";
 
 const useStyles = makeStyles({
-  wrapper: {
-    position: "relative",
-    height: "100vh",
-    flexGrow: 1,
-    overflowX: "auto",
-    paddingLeft: "2rem",
-    paddingRight: "rem",
-    paddingTop: "2.5rem",
-  },
-  flexGrow: {
-    display: "flex",
-    flexFlow: "column",
-    flexGrow: 1,
-  },
   body: {
+    background: "var(--page-bg)",
     display: "flex",
-    overflowY: "scroll",
-    margin: "0px",
-    backgroundColor: "f3f3f3",
+    minHeight: "100vh",
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+    paddingBottom: "3rem",
+    paddingTop: "3rem",
+  },
+  wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+    margin: "0 auto",
+    maxWidth: "1440px",
+    paddingLeft: "3rem",
+    paddingRight: "3rem",
+    width: "100%",
+  },
+  inner: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
   },
 });
 
@@ -34,9 +41,9 @@ const Page = (props) => {
   return (
     <div className={classes.body}>
       <SidebarNav active={pathname} />
-      <div className={classes.flexGrow}>
+      <div className={classes.content}>
         <div className={classes.wrapper}>
-          <div className={classes.flexGrow}>{props.children}</div>
+          <div className={classes.inner}>{props.children}</div>
         </div>
       </div>
     </div>

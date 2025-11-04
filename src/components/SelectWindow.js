@@ -7,7 +7,6 @@ import {
 } from "@material-ui/pickers";
 import Button from "@material-ui/core/Button";
 import DateFnsUtils from "@date-io/date-fns";
-import FormControl from "@material-ui/core/FormControl";
 import Link from "@material-ui/core/Link";
 import Popover from "@material-ui/core/Popover";
 import TextField from "@material-ui/core/TextField";
@@ -28,9 +27,8 @@ const useStyles = makeStyles({
     display: "flex",
     flexFlow: "column",
   },
-  formControl: {
-    margin: 8,
-    width: 120,
+  trigger: {
+    minWidth: 160,
   },
 });
 
@@ -100,18 +98,18 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
 
   return (
     <>
-      <FormControl className={classes.formControl}>
-        <TextField
-          id="filled-read-only-input"
-          label="Date Range"
-          value={get(find(windowOptions, { value: window }), "name", "Custom")}
-          onClick={(e) => handleClick(e)}
-          inputProps={{
-            readOnly: true,
-            style: { cursor: "pointer" },
-          }}
-        />
-      </FormControl>
+      <TextField
+        label="Date Range"
+        value={get(find(windowOptions, { value: window }), "name", "Custom")}
+        onClick={(e) => handleClick(e)}
+        inputProps={{
+          readOnly: true,
+          style: { cursor: "pointer" },
+        }}
+        variant="outlined"
+        size="small"
+        className={classes.trigger}
+      />
       <Popover
         id={id}
         open={open}
@@ -166,10 +164,14 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
             </MuiPickersUtilsProvider>
             <div>
               <Button
-                style={{ marginTop: 16 }}
+                style={{
+                  backgroundColor: "var(--sidebar-active)",
+                  color: "#0f172a",
+                  marginTop: 16,
+                }}
                 variant="contained"
-                color="default"
                 onClick={handleSubmitCustomDates}
+                disableElevation
               >
                 Apply
               </Button>
@@ -182,7 +184,12 @@ const SelectWindow = ({ windowOptions, window, setWindow }) => {
             {windowOptions.map((opt) => (
               <Typography key={opt.value}>
                 <Link
-                  style={{ cursor: "pointer" }}
+                  style={{
+                    color: "var(--sidebar-active)",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
                   key={opt.value}
                   value={opt.value}
                   onClick={() => handleSubmitPresetDates(opt.value)}

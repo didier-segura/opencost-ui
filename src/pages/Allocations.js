@@ -16,6 +16,7 @@ import Footer from "../components/Footer";
 import Subtitle from "../components/Subtitle";
 import Warnings from "../components/Warnings";
 import AllocationService from "../services/allocation";
+import AllocationSummaryCards from "../components/AllocationSummaryCards";
 import {
   checkCustomWindow,
   cumulativeToTotals,
@@ -56,15 +57,71 @@ const accumulateOptions = [
 ];
 
 const useStyles = makeStyles({
-  reportHeader: {
+  summaryGrid: {
+    marginBottom: "2rem",
+  },
+  reportCard: {
     display: "flex",
-    flexFlow: "row",
-    padding: 24,
+    flexDirection: "column",
+    gap: "1.75rem",
+  },
+  reportHeader: {
+    alignItems: "flex-start",
+    borderBottom: `1px solid var(--card-border)`,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "1.5rem",
+    justifyContent: "space-between",
+    paddingBottom: "1.5rem",
   },
   titles: {
     flexGrow: 1,
+    minWidth: 200,
   },
 });
+
+const viewConfigs = {
+  default: {
+    headerTitle: "Cost Allocation",
+    eyebrow: "Cost Explorer",
+    defaultWindow: "7d",
+    defaultAggregateBy: "namespace",
+    topEntityLabel: "Workload",
+  },
+  "/": {
+    headerTitle: "Cost Allocation",
+    eyebrow: "Cost Explorer",
+  },
+  "/allocation": {
+    headerTitle: "Cost Allocation",
+    eyebrow: "Cost Explorer",
+  },
+  "/assets": {
+    headerTitle: "Assets",
+    eyebrow: "Monitor",
+    defaultAggregateBy: "controllerKind",
+    topEntityLabel: "Asset",
+    defaultTitle: "Last 7 days by type",
+  },
+  "/clusters": {
+    headerTitle: "Clusters",
+    eyebrow: "Monitor",
+    defaultAggregateBy: "cluster",
+    topEntityLabel: "Cluster",
+  },
+  "/efficiency": {
+    headerTitle: "Efficiency",
+    eyebrow: "Monitor",
+    defaultAggregateBy: "namespace",
+    topEntityLabel: "Team",
+  },
+  "/network": {
+    headerTitle: "Network",
+    eyebrow: "Monitor",
+    defaultAggregateBy: "namespace",
+    topEntityLabel: "Namespace",
+  },
+};
 
 // generateTitle generates a string title from a report object
 function generateTitle({ window, aggregateBy, accumulate }) {
@@ -107,13 +164,6 @@ const ReportsPage = () => {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState([]);
 
-  // When allocation data changes, create a cumulative version of it
-  useEffect(() => {
-    const cumulative = rangeToCumulative(allocationData, aggregateBy);
-    setCumulativeData(toArray(cumulative));
-    setTotalData(cumulativeToTotals(cumulative));
-  }, [allocationData]);
-
   // State of controls on the page is generally derived from query parameters in the url.
   // Updates to these controls are pushed through the router using `searchParams.set()`.
   // Defaults are supplied in case of the absence of a query parameter.
@@ -121,13 +171,32 @@ const ReportsPage = () => {
   const searchParams = new URLSearchParams(routerLocation.search);
   const routerHistory = useHistory();
 
-  const win = searchParams.get("window") || "7d";
-  const aggregateBy = searchParams.get("agg") || "namespace";
-  const accumulate = searchParams.get("acc") === "true";
+  const viewConfig =
+    viewConfigs[routerLocation.pathname] || viewConfigs.default;
+
+  const win = searchParams.get("window") || viewConfig.defaultWindow || "7d";
+  const aggregateBy =
+    searchParams.get("agg") || viewConfig.defaultAggregateBy || "namespace";
+  const accumulateParam = searchParams.get("acc");
+  const accumulate =
+    accumulateParam !== null
+      ? accumulateParam === "true"
+      : viewConfig.defaultAccumulate || false;
   const currency = searchParams.get("currency") || "USD";
-  const title =
-    searchParams.get("title") ||
+  const aggregationLabel =
+    get(find(aggregationOptions, { value: aggregateBy }), "name", "") ||
+    aggregateBy;
+  const defaultTitle =
+    viewConfig.defaultTitle ||
     generateTitle({ window: win, aggregateBy, accumulate });
+  const title = searchParams.get("title") || defaultTitle;
+
+  // When allocation data changes, create a cumulative version of it
+  useEffect(() => {
+    const cumulative = rangeToCumulative(allocationData, aggregateBy);
+    setCumulativeData(toArray(cumulative));
+    setTotalData(cumulativeToTotals(cumulative));
+  }, [allocationData, aggregateBy]);
 
   // When parameters which effect query results change, refetch the data.
   useEffect(() => {
@@ -193,18 +262,33 @@ const ReportsPage = () => {
   }
   return (
     <Page active="reports.html">
-      <Header headerTitle="Cost Allocation">
+      <Header
+        headerTitle={viewConfig.headerTitle || "Cost Allocation"}
+        eyebrow={viewConfig.eyebrow || "Monitor"}
+      >
         <IconButton aria-label="refresh" onClick={() => fetchData()}>
           <RefreshIcon />
         </IconButton>
       </Header>
+
+      <div className={classes.summaryGrid}>
+        <AllocationSummaryCards
+          loading={loading}
+          totalData={totalData}
+          currency={currency}
+          aggregateBy={aggregateBy}
+          allocationRange={allocationData}
+          aggregationLabel={aggregationLabel}
+          topEntityLabel={viewConfig.topEntityLabel}
+        />
+      </div>
 
       {!loading && errors.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <Warnings warnings={errors} />
         </div>
       )}
-      <Paper id="report">
+      <Paper id="report" className={classes.reportCard}>
         <div className={classes.reportHeader}>
           <div className={classes.titles}>
             <Typography variant="h5">{title}</Typography>

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Allocations from "./pages/Allocations.js";
+import Assets from "./pages/Assets.js";
 import CloudCosts from "./pages/CloudCosts.js";
 import ExternalCosts from "./pages/ExternalCosts.js";
 
@@ -16,11 +17,23 @@ const Routes = () => {
         <Route exact path="/allocation">
           <Allocations />
         </Route>
+        <Route exact path="/assets">
+          <Assets />
+        </Route>
         <Route exact path="/cloud">
           <CloudCosts />
         </Route>
+        <Route exact path="/clusters">
+          <Allocations />
+        </Route>
         <Route exact path="/external-costs">
           <ExternalCosts />
+        </Route>
+        <Route exact path="/efficiency">
+          <Allocations />
+        </Route>
+        <Route exact path="/network">
+          <Allocations />
         </Route>
       </Switch>
     </Router>
