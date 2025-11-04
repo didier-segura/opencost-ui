@@ -1,20 +1,20 @@
 name: Build and Publish Develop UI
 
 on:
-  # workflow_run:
-  #   workflows: [Build/Test]
-  #   types: [completed]
-  #   branches: [develop]
+  workflow_run:
+    workflows: [Build/Test]
+    types: [completed]
+    branches: [develop]
 
-  push:
-    branches:
-      - main
-      - develop
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
 
-  pull_request:
-    branches:
-      - main
-      - develop
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - develop
 
 concurrency:
   group: build-opencost-ui-develop
