@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows: [Build/Test]
     types: [completed]
-    branches: [develop]
 
   # push:
   #   branches:
@@ -27,7 +26,7 @@ env:
 jobs:
   build-and-publish-opencost-ui:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
     permissions:
       contents: read
       packages: write
@@ -65,5 +64,4 @@ jobs:
           NEW_TAG="${REPO}:develop-latest"
           echo "Copying ${{ steps.tags.outputs.IMAGE_TAG }} to ${NEW_TAG}"
           crane copy "${{ steps.tags.outputs.IMAGE_TAG }}" "${NEW_TAG}"
-
 
