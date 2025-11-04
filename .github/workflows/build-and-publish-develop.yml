@@ -6,6 +6,16 @@ on:
     types: [completed]
     branches: [develop]
 
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
 concurrency:
   group: build-opencost-ui-develop
   cancel-in-progress: false
