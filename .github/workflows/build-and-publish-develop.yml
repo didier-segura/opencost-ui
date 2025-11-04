@@ -4,6 +4,9 @@ on:
   workflow_run:
     workflows: [Build/Test]
     types: [completed]
+  push:
+    branches:
+      - develop
 
   # push:
   #   branches:
@@ -26,13 +29,15 @@ env:
 jobs:
   build-and-publish-opencost-ui:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop') }}
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set SHA
         id: sha
@@ -64,4 +69,3 @@ jobs:
           NEW_TAG="${REPO}:develop-latest"
           echo "Copying ${{ steps.tags.outputs.IMAGE_TAG }} to ${NEW_TAG}"
           crane copy "${{ steps.tags.outputs.IMAGE_TAG }}" "${NEW_TAG}"
-
